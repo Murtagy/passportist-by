@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мастер решений паспортиста — регистрация по Указу № 413</title>
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:#fff; --text:#101828; --muted:#667085; --line:#e4e7ec;
+      --accent:#2457c5; --accent2:#eef4ff; --ok:#067647; --warn:#b54708; --bad:#b42318;
+      --shadow:0 8px 28px rgba(16,24,40,.08); --radius:18px;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
+    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    h1{font-size:20px;margin:0 0 4px} h2{font-size:22px;margin:0 0 12px} h3{font-size:16px;margin:18px 0 8px}.muted{color:var(--muted)}
+    .top{display:flex;gap:12px;align-items:center;justify-content:space-between}.badge{font-size:12px;background:var(--accent2);color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:700;white-space:nowrap}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}.question{min-height:420px}
+    .progress{height:8px;background:#eaecf0;border-radius:999px;overflow:hidden;margin:12px 0}.bar{height:100%;background:var(--accent);width:0%;transition:.25s}
+    .path{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}.chip{font-size:12px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 9px;color:#344054}
+    .options{display:grid;gap:10px;margin-top:16px}.opt{border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;text-align:left;cursor:pointer;font:inherit;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+    .opt:hover,.opt:focus{outline:2px solid #b2ccff;border-color:#84adff}.opt strong{display:block;margin-bottom:4px}.opt span{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+    .actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;color:#344054}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:var(--bad)}
+    .help p,.help li{font-size:14px;line-height:1.45}.help ul{padding-left:19px}.ref{border-left:4px solid #d0d5dd;padding:8px 10px;background:#f9fafb;border-radius:8px;margin:8px 0;font-size:13px}.ref a{color:var(--accent);font-weight:700;text-decoration:none}
+    .result{border-radius:16px;padding:14px;margin:12px 0;border:1px solid var(--line)}.result.ok{background:#ecfdf3;border-color:#abefc6}.result.warn{background:#fffaeb;border-color:#fedf89}.result.bad{background:#fef3f2;border-color:#fecdca}.result h2{margin:0 0 6px}.pill{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;margin-bottom:8px}.ok .pill{background:#dcfae6;color:var(--ok)}.warn .pill{background:#fef0c7;color:var(--warn)}.bad .pill{background:#fee4e2;color:var(--bad)}
+    details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;margin:10px 0}summary{font-weight:800;cursor:pointer}.copybox{background:#101828;color:#fff;border-radius:12px;padding:12px;white-space:pre-wrap;font-size:13px;line-height:1.45;overflow:auto}.search{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit}.cards{display:grid;gap:10px}.smallcard{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px}.smallcard h4{margin:0 0 6px}.footer{font-size:12px;color:var(--muted);padding:20px 0 50px}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}.top{align-items:flex-start}.question{min-height:auto}.badge{white-space:normal}.wrap{padding:12px}.card{padding:14px;border-radius:16px}h2{font-size:20px}}
+    @media print{header,.actions,.search{display:none}.grid{display:block}.card{box-shadow:none;break-inside:avoid}.question{min-height:0}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div><h1>Мастер решений паспортиста</h1><div class="muted">Регистрация по месту жительства / пребывания по Указу Президента РБ № 413</div></div>
+    <div class="badge">Актуальность проверять по ЭТАЛОН / Pravo.by</div>
+  </div>
+</header>
+<main class="wrap">
+  <div class="grid">
+    <section class="card question" id="app"></section>
+    <aside class="card help" id="side"></aside>
+  </div>
+  <section class="card" style="margin-top:16px">
+    <h2>Справочник оснований и согласий</h2>
+    <input class="search" id="search" placeholder="Поиск: найм, бабушка, ВНЖ, Минск, согласие, аренда…" />
+    <div class="cards" id="directory" style="margin-top:12px"></div>
+  </section>
+  <div class="footer">
+    Это помощник для первичной проверки. Для отказа или спорной регистрации сверяйте актуальную редакцию Указа № 413 и законодательство об административных процедурах. Все ссылки ведут на официальный/публичный текст документа; рядом указан пункт для проверки.
+  </div>
+</main>
+<script>
+const LAW_URL = 'https://etalonline.by/document/?regnum=p30700413';
+const PRAVO_URL = 'https://pravo.by/document/?guid=3871&p0=P30700413';
+const refs = {
+  scope: {label:'п. 2 — на кого распространяется Положение', url: LAW_URL},
+  id: {label:'п. 4.1 — документы, удостоверяющие личность', url: LAW_URL},
+  basis: {label:'п. 4.2 — документы-основания регистрации', url: LAW_URL},
+  minor: {label:'п. 7 — регистрация несовершеннолетних', url: LAW_URL},
+  consent: {label:'п. 7¹ — согласия собственника, нанимателя, долевых собственников, лизингополучателя', url: LAW_URL},
+  limits: {label:'п. 8 — ограничения регистрации', url: LAW_URL},
+  exceptions: {label:'п. 9 — исключения из ограничений', url: LAW_URL},
+  refuse: {label:'п. 10 — основания отказа и мотивированный письменный отказ', url: LAW_URL},
+  residenceDocs: {label:'п. 13 — документы для регистрации по месту жительства', url: LAW_URL},
+  stay: {label:'п. 21–27 — регистрация по месту пребывания, срок, повторное обращение', url: LAW_URL},
+  forms: {label:'п. 12, 13, 22 — формы заявлений устанавливает МВД', url: LAW_URL}
+};
+
+const questions = {
+  start: {
+    title:'1. Кто регистрируется?',
+    help:'Сначала проверьте, подпадает ли человек под Указ № 413. Временно пребывающие и временно проживающие иностранцы оформляются по другим актам.',
+    refs:['scope','id'],
+    options:[
+      {id:'citizen', label:'Гражданин Республики Беларусь', note:'Паспорт, ID-карта или свидетельство о рождении до 14 лет при отсутствии иных документов.', set:{person:'citizen'}, next:'regType'},
+      {id:'foreign_perm', label:'Иностранец / лицо без гражданства с ВНЖ', note:'Постоянно проживает в РБ: Указ № 413 применяется.', set:{person:'foreign_perm'}, next:'regType'},
+      {id:'refugee_perm', label:'Беженец / убежище с постоянным проживанием', note:'Применяется после получения разрешения на постоянное проживание.', set:{person:'refugee_perm'}, next:'regType'},
+      {id:'foreign_temp', label:'Временно пребывающий или временно проживающий иностранец', note:'Не по Указу № 413.', terminal:'not413'}
+    ]
+  },
+  regType: {
+    title:'2. Какой вид регистрации?',
+    help:'Место жительства — постоянное или преимущественное проживание. Место пребывания — временное пребывание; обычно до одного года и без снятия с места жительства.',
+    refs:['basis','stay'],
+    options:[
+      {id:'residence', label:'Регистрация по месту жительства', note:'Проверяются документы по п. 13, ограничения по п. 8 и исключения по п. 9.', set:{regType:'residence'}, next:'premise'},
+      {id:'stay', label:'Регистрация по месту пребывания', note:'Без снятия с места жительства; обычно срок до одного года.', set:{regType:'stay'}, next:'premise'}
+    ]
+  },
+  premise: {
+    title:'3. Вид помещения',
+    help:'Тип помещения влияет на основание: для квартиры/дома обычно найм, собственность, лизинг, родство; договор аренды по Указу используется для помещения временного проживания — садовый домик или дача.',
+    refs:['basis','stay'],
+    options:[
+      {id:'dwelling', label:'Жилое помещение: квартира, жилой дом, комната', note:'Обычный основной случай.', set:{premise:'dwelling'}, next:'age'},
+      {id:'temporary', label:'Помещение для временного проживания: садовый домик / дача', note:'Здесь возможен договор аренды помещения для временного проживания.', set:{premise:'temporary'}, next:'age'},
+      {id:'dorm', label:'Общежитие / соцпользование / арендное / специальное жилье', note:'Нужно право на вселение, кроме несовершеннолетних к законным представителям.', set:{premise:'special_housing'}, next:'age'},
+      {id:'institution', label:'Учреждение / закрепленное жилье / особый случай', note:'Детские учреждения, соцобслуживание, закрепленное жилье, военная служба и др.', set:{premise:'institution'}, next:'special'}
+    ]
+  },
+  age: {
+    title:'4. Возраст и статус регистрируемого',
+    help:'Для несовершеннолетних действует отдельная логика пункта 7. Особенно важно: до 14 лет нельзя просто зарегистрировать к бабушке, если она не законный представитель и нет специального основания.',
+    refs:['minor','consent'],
+    options:[
+      {id:'adult', label:'Совершеннолетний / полностью дееспособный', note:'Перейти к виду правового основания.', set:{age:'adult'}, next:'basisKind'},
+      {id:'u14', label:'Несовершеннолетний до 14 лет', note:'Регистрация по месту жительства — к родителям, одному родителю с согласием второго/судом, или в закрепленное жилье.', set:{age:'u14'}, next:'minorU14'},
+      {id:'m14_18', label:'Несовершеннолетний 14–18 лет', note:'Может регистрироваться не к родителям, но нужно согласие законных представителей и основание пользования.', set:{age:'m14_18'}, next:'minor14'}
+    ]
+  },
+  minorU14: {
+    title:'5. Куда регистрируется ребенок до 14 лет?',
+    help:'Регистрация несовершеннолетнего по месту жительства/пребывания законных представителей или одного из них производится без согласия собственников, нанимателей, наймодателей, лизингополучателей и взрослых членов их семей.',
+    refs:['minor','consent'],
+    options:[
+      {id:'both_parents', label:'К обоим родителям / законным представителям', note:'Согласие собственника/нанимателя не требуется.', set:{minorDest:'parents'}, next:'final'},
+      {id:'one_parent', label:'К одному родителю', note:'Для места жительства нужно согласие второго родителя либо суд/Соглашение о детях. Для места пребывания — без согласия второго.', set:{minorDest:'one_parent'}, next:'final'},
+      {id:'guardian', label:'К опекуну / попечителю / приемному родителю / родителю-воспитателю', note:'Нужен документ об опеке/попечительстве/приемной семье.', set:{minorDest:'guardian'}, next:'final'},
+      {id:'fixed_home', label:'В закрепленное за ребенком жилье', note:'Нужно решение местного исполнительного и распорядительного органа о закреплении жилья.', set:{minorDest:'fixed_home'}, next:'final'},
+      {id:'grand_no_guardian', label:'К бабушке/дедушке без статуса законного представителя', note:'По Указу нет общего основания для ребенка до 14 лет.', set:{minorDest:'grand_no_guardian'}, next:'final'}
+    ]
+  },
+  minor14: {
+    title:'5. Куда регистрируется ребенок 14–18 лет?',
+    help:'Ребенок 14–18 лет может быть зарегистрирован не по месту жительства/пребывания законных представителей, но с их согласием, кроме специальных случаев.',
+    refs:['minor','residenceDocs','stay'],
+    options:[
+      {id:'parents', label:'К родителям / законным представителям', note:'Согласие собственника/нанимателя не требуется.', set:{minorDest:'parents'}, next:'final'},
+      {id:'one_parent', label:'К одному родителю', note:'Для места жительства — согласие второго родителя или суд/Соглашение; для пребывания — без согласия второго.', set:{minorDest:'one_parent'}, next:'final'},
+      {id:'not_parents', label:'Не к родителям: например к бабушке, дедушке, родственнику', note:'Нужно согласие законных представителей + основание пользования жильем.', set:{minorDest:'not_parents'}, next:'basisKind'},
+      {id:'study', label:'Иногородний учащийся дневной формы', note:'Регистрация по месту пребывания на срок получения образования.', set:{minorDest:'study'}, next:'final'},
+      {id:'fixed_home', label:'В закрепленное жилье', note:'Нужно решение о закреплении жилья.', set:{minorDest:'fixed_home'}, next:'final'}
+    ]
+  },
+  basisKind: {
+    title:'5. Вид основания / кто предоставляет жилье',
+    help:'Здесь ключевой выбор. Не ограничивайтесь фразой “есть основание”: выберите конкретный вид документа или правовой связи.',
+    refs:['basis','consent'],
+    options:[
+      {id:'self_owner', label:'Сам собственник регистрируется в свое жилье', note:'Основание — документ о собственности.', set:{basisKind:'self_owner'}, next:'locationFactors'},
+      {id:'owner_provides', label:'Жилье предоставляет собственник', note:'Дальше уточняется отношение к собственнику.', set:{basisKind:'owner_provides'}, next:'relationOwner'},
+      {id:'share_owner', label:'Жилье в общей долевой собственности', note:'Дальше уточняется: регистрируется сам участник или другое лицо.', set:{basisKind:'share_owner'}, next:'relationShare'},
+      {id:'tenant', label:'Жилье предоставляет наниматель', note:'Дальше уточняется наймодатель и отношение к нанимателю.', set:{basisKind:'tenant'}, next:'tenantKind'},
+      {id:'hire_contract', label:'Договор найма жилого помещения', note:'Для жилого помещения; договор должен быть действующим.', set:{basisKind:'hire_contract'}, next:'contractStatus'},
+      {id:'leasing', label:'Договор лизинга жилого помещения', note:'Для квартиры/дома частного жилищного фонда по договору лизинга.', set:{basisKind:'leasing'}, next:'relationLeasing'},
+      {id:'temp_lease', label:'Договор аренды помещения для временного проживания', note:'Только для места пребывания в садовом домике/даче.', set:{basisKind:'temp_lease'}, next:'locationFactors'},
+      {id:'court', label:'Решение суда о вселении / признании права пользования', note:'Для регистрации по месту жительства.', set:{basisKind:'court'}, next:'locationFactors'},
+      {id:'no_basis', label:'Нет документа-основания', note:'Простого устного согласия недостаточно.', set:{basisKind:'no_basis'}, next:'final'}
+    ]
+  },
+  relationOwner: {
+    title:'6. Кем регистрируемый является для собственника?',
+    help:'Пункт 7¹ различает близких членов семьи собственника и иных родственников/иждивенцев. Для неродственника нужно самостоятельное основание — например договор найма, лизинг или суд.',
+    refs:['consent','basis'],
+    options:[
+      {id:'spouse_parent_child', label:'Супруг, родитель или ребенок собственника', note:'Нужно письменное согласие собственника; согласие взрослых членов/бывших членов семьи собственника не требуется.', set:{relation:'spouse_parent_child'}, next:'locationFactors'},
+      {id:'other_family', label:'Брат, сестра, бабушка, дед, внук, иной родственник, свойственник, нетрудоспособный иждивенец', note:'Нужно письменное соглашение о признании членом семьи + согласия по п. 7¹.', set:{relation:'other_family_owner'}, next:'coOwnerMembers'},
+      {id:'nonrelative', label:'Неродственник', note:'Нужно самостоятельное основание: найм, лизинг, суд или иное основание. Одного согласия собственника недостаточно.', set:{relation:'nonrelative_owner'}, next:'final'}
+    ]
+  },
+  coOwnerMembers: {
+    title:'7. Есть ли лица, чье согласие дополнительно требуется?',
+    help:'Для иных родственников/членов семьи собственника по соглашению нужно согласие собственника и всех совершеннолетних членов/бывших членов семьи собственника, если они одновременно проживают совместно с ним и имеют долю в праве собственности.',
+    refs:['consent'],
+    options:[
+      {id:'none', label:'Нет таких лиц', note:'Достаточно согласия собственника + соглашения о признании членом семьи.', set:{extraConsent:'none'}, next:'locationFactors'},
+      {id:'exists', label:'Есть совместно проживающие совершеннолетние члены/бывшие члены семьи с долей', note:'Нужно их письменное согласие.', set:{extraConsent:'members_with_share'}, next:'locationFactors'},
+      {id:'unknown', label:'Неизвестно', note:'Проверить долевую собственность и совместное проживание перед решением.', set:{extraConsent:'unknown'}, next:'locationFactors'}
+    ]
+  },
+  relationShare: {
+    title:'6. Общая долевая собственность: кого регистрируют?',
+    help:'Участник долевой собственности регистрируется сам без согласия других участников. Для иных граждан, кроме супруга/родителей/детей участника, нужно согласие других участников общей долевой собственности.',
+    refs:['consent'],
+    options:[
+      {id:'self', label:'Сам участник общей долевой собственности', note:'Согласие других участников долевой собственности не нужно.', set:{relation:'share_self'}, next:'locationFactors'},
+      {id:'spouse_parent_child', label:'Супруг, родитель или ребенок участника долевой собственности', note:'Нужно письменное согласие этого участника; согласие иных участников не требуется.', set:{relation:'share_spouse_parent_child'}, next:'locationFactors'},
+      {id:'other', label:'Иное лицо', note:'Нужно согласие участника, который предоставляет право, и других участников общей долевой собственности.', set:{relation:'share_other'}, next:'locationFactors'}
+    ]
+  },
+  tenantKind: {
+    title:'6. Кто наймодатель и кого регистрирует наниматель?',
+    help:'Для супруга, родителей и детей нанимателя согласия зависят от того, кто наймодатель: организация/госжилфонд или гражданин.',
+    refs:['consent'],
+    options:[
+      {id:'state_org_family', label:'Наймодатель — организация / госжилфонд; регистрируются супруг, родители или дети нанимателя', note:'Нужно согласие нанимателя; согласие иных нанимателей и членов семей не требуется.', set:{tenantCase:'state_org_family'}, next:'locationFactors'},
+      {id:'private_citizen_family', label:'Наймодатель — гражданин; регистрируются супруг, родители или дети нанимателя', note:'Нужно согласие нанимателя и наймодателя.', set:{tenantCase:'private_citizen_family'}, next:'locationFactors'},
+      {id:'tenant_other', label:'Регистрируется иное лицо', note:'Нужно отдельное основание и согласия по законодательству; проверьте договор и право на вселение.', set:{tenantCase:'tenant_other'}, next:'locationFactors'}
+    ]
+  },
+  relationLeasing: {
+    title:'6. Лизингополучатель: кого регистрируют?',
+    help:'Для супруга/родителей/детей лизингополучателя согласие лизингодателя не требуется. Для иных родственников нужно соглашение о признании членом семьи и согласия взрослых членов семьи лизингополучателя.',
+    refs:['basis','consent'],
+    options:[
+      {id:'self', label:'Сам лизингополучатель', note:'Основание — договор лизинга жилого помещения.', set:{leasingCase:'self'}, next:'locationFactors'},
+      {id:'spouse_parent_child', label:'Супруг, родитель или ребенок лизингополучателя', note:'Нужно письменное согласие лизингополучателя; согласие лизингодателя не требуется.', set:{leasingCase:'spouse_parent_child'}, next:'locationFactors'},
+      {id:'other_family', label:'Брат/сестра/бабушка/дед/внук/иной родственник лизингополучателя', note:'Нужно соглашение о признании членом семьи + согласие лизингополучателя и взрослых членов семьи, проживающих совместно.', set:{leasingCase:'other_family'}, next:'locationFactors'}
+    ]
+  },
+  contractStatus: {
+    title:'6. Договор найма действует?',
+    help:'Для регистрации по договору найма основанием является действующий договор. Для продления места пребывания нужен новый договор или допсоглашение, если прежний срок истек.',
+    refs:['basis','stay'],
+    options:[
+      {id:'valid', label:'Да, договор действует', note:'Можно использовать как основание при совпадении адреса и условий.', set:{contractValid:'yes'}, next:'locationFactors'},
+      {id:'expired', label:'Нет, договор закончился', note:'Нужно новое основание: новый договор или допсоглашение.', set:{contractValid:'no'}, next:'final'},
+      {id:'unknown', label:'Не проверено', note:'Проверить срок договора, адрес, стороны, право пользования.', set:{contractValid:'unknown'}, next:'locationFactors'}
+    ]
+  },
+  special: {
+    title:'4. Особый случай',
+    help:'Для учреждений, закрепленного жилья, соцобслуживания, военной службы и иных специальных случаев применяются специальные документы из п. 4.2 и глава 4.',
+    refs:['basis','stay'],
+    options:[
+      {id:'fixed_home', label:'Закрепленное жилое помещение', note:'Основание — решение местного исполнительного и распорядительного органа о закреплении.', set:{special:'fixed_home'}, next:'final'},
+      {id:'institution_child', label:'Детское / специальное / воспитательное учреждение', note:'Основание — приказ/решение/приговор в зависимости от учреждения.', set:{special:'institution_child'}, next:'final'},
+      {id:'social', label:'Учреждение социального обслуживания', note:'Основание — приказ о зачислении на стационарное соцобслуживание.', set:{special:'social'}, next:'final'},
+      {id:'military', label:'Военная служба / сборы', note:'Особый порядок главы 4.', set:{special:'military'}, next:'final'},
+      {id:'other', label:'Другой спецслучай', note:'Открыть актуальный текст и проверить главу 4.', set:{special:'other'}, next:'final'}
+    ]
+  },
+  locationFactors: {
+    title:'7. Факторы ограничений',
+    help:'Для места жительства проверяется территория, пригодность жилья, площадь и исключения. Для места пребывания действует ограничение по особым территориям; также проверьте срок и действующее основание.',
+    refs:['limits','exceptions','refuse','stay'],
+    options:[
+      {id:'minsk', label:'Город Минск', note:'Для места жительства норма площади — 20 кв. м; исключения п. 9 для Минска уже.', set:{location:'minsk'}, next:'areaNeed'},
+      {id:'not_minsk', label:'Не Минск', note:'Для места жительства общая норма — 15 кв. м; проверяйте исключения п. 9.', set:{location:'not_minsk'}, next:'areaNeed'},
+      {id:'closed', label:'Закрытая/особая территория, ЧП, военное положение и т.п.', note:'Регистрация ограничивается.', set:{location:'closed'}, next:'final'}
+    ]
+  },
+  areaNeed: {
+    title:'8. Нужно ли проверять норму площади?',
+    help:'Площадь не проверяется, если случай входит в исключения п. 9. В Минске перечень исключений уже: например, общего исключения для внуков к бабушке/деду по месту жительства нет.',
+    refs:['limits','exceptions'],
+    options:[
+      {id:'exception', label:'Случай входит в исключение п. 9', note:'Например собственник в свое жилье, супруг к супругу, несовершеннолетний к родителям, родитель к ребенку, совершеннолетний ребенок к родителю.', set:{area:'exception'}, next:'final'},
+      {id:'check_ok', label:'Площадь проверена и нормы хватает', note:'15 кв. м вне Минска, 20 кв. м в Минске; общежитие — 6 кв. м жилой площади.', set:{area:'ok'}, next:'final'},
+      {id:'check_bad', label:'Площадь проверена и нормы не хватает', note:'Если нет исключения п. 9 — отказ по ограничению.', set:{area:'bad'}, next:'final'},
+      {id:'unknown', label:'Площадь / исключение не проверены', note:'Решение нельзя завершить без проверки площади или исключения.', set:{area:'unknown'}, next:'final'}
+    ]
+  }
+};
+
+const directory = [
+ {title:'Документ личности', body:'Паспорт РБ, ID-карта РБ, биометрический ВНЖ иностранца/лица без гражданства, свидетельство о рождении до 14 лет при отсутствии иных документов, ВНЖ, удостоверение беженца.', refs:['id']},
+ {title:'Собственность', body:'Основание — свидетельство/удостоверение о госрегистрации права, выписка из регистрационной книги или регистрационное удостоверение. Собственник регистрируется сам без согласий; ограничения площади не применяются как исключение п. 9.', refs:['basis','exceptions']},
+ {title:'Супруг, родитель, ребенок собственника', body:'Нужно письменное согласие собственника. Согласие совершеннолетних членов/бывших членов семьи собственника, проживающих совместно с ним, не требуется. Основание — брак или родство.', refs:['basis','consent','exceptions']},
+ {title:'Брат/сестра/бабушка/дед/внук/иной родственник собственника', body:'Нужно письменное соглашение о признании членом семьи, согласие собственника, а также согласия совершеннолетних членов/бывших членов семьи собственника, если они проживают совместно и имеют долю в праве собственности.', refs:['basis','consent']},
+ {title:'Неродственник', body:'Одного согласия собственника недостаточно. Нужен самостоятельный документ-основание: договор найма, договор лизинга, решение суда или иное основание.', refs:['basis','consent','refuse']},
+ {title:'Договор найма жилого помещения', body:'Подходит для жилого помещения по месту жительства или месту пребывания, если договор действующий. Для продления пребывания после окончания срока нужен новый договор или допсоглашение.', refs:['basis','stay']},
+ {title:'Договор аренды', body:'По Указу № 413 договор аренды указан для помещения временного проживания — садового домика или дачи — и только для регистрации по месту пребывания.', refs:['basis']},
+ {title:'Договор лизинга жилого помещения', body:'Основание для регистрации в жилом помещении, находящемся во владении и пользовании по договору лизинга. Для супруга/родителей/детей лизингополучателя нужно согласие лизингополучателя; согласие лизингодателя не требуется.', refs:['basis','consent']},
+ {title:'Несовершеннолетний до 14 лет', body:'По месту жительства — к родителям, одному родителю с согласием второго/судом/Соглашением о детях, либо в закрепленное жилье. К бабушке без статуса законного представителя общего основания нет.', refs:['minor','consent']},
+ {title:'Несовершеннолетний 14–18 лет', body:'Может регистрироваться не по месту жительства/пребывания законных представителей с их письменным согласием и при наличии основания пользования помещением.', refs:['minor','residenceDocs','stay']},
+ {title:'Место пребывания', body:'Обычно срок до одного года, без снятия с места жительства, только один адрес места пребывания. Повторно обратиться можно не ранее чем за 10 календарных дней до окончания срока.', refs:['stay']},
+ {title:'Ограничения и отказ', body:'Для места жительства проверяются особые территории, площадь, пригодность жилья и судебный запрет. Отказ должен быть мотивирован и сообщается письменно.', refs:['limits','exceptions','refuse']},
+ {title:'Минск', body:'Для места жительства в Минске норма — 20 кв. м общей площади; перечень исключений п. 9 для Минска уже, чем общий перечень.', refs:['limits','exceptions']}
+];
+
+let state = JSON.parse(localStorage.getItem('passportistState') || '{}');
+let current = localStorage.getItem('passportistCurrent') || 'start';
+const history = JSON.parse(localStorage.getItem('passportistHistory') || '[]');
+
+function save(){ localStorage.setItem('passportistState', JSON.stringify(state)); localStorage.setItem('passportistCurrent', current); localStorage.setItem('passportistHistory', JSON.stringify(history)); }
+function reset(){ state={}; current='start'; history.length=0; save(); render(); }
+function back(){ const prev = history.pop(); if(prev){ current=prev; save(); render(); } }
+function choose(opt){ if(opt.terminal){ state.terminal=opt.terminal; history.push(current); current='final'; save(); render(); return; } Object.assign(state, opt.set||{}); history.push(current); current=opt.next; save(); render(); }
+function refHtml(keys){ return (keys||[]).map(k=>`<div class="ref"><a target="_blank" rel="noopener" href="${refs[k].url}">${refs[k].label}</a></div>`).join(''); }
+function pct(){ const n = Math.min(9, Object.keys(state).length+1); return Math.round(n/9*100); }
+function pathHtml(){ const labels=[]; if(state.person) labels.push(personLabel()); if(state.regType) labels.push(state.regType==='residence'?'место жительства':'место пребывания'); if(state.premise) labels.push(premiseLabel()); if(state.age) labels.push(state.age==='adult'?'совершеннолетний':state.age==='u14'?'до 14 лет':'14–18 лет'); if(state.basisKind) labels.push(basisLabel()); if(state.location) labels.push(state.location==='minsk'?'Минск':state.location==='not_minsk'?'не Минск':'особая территория'); return labels.map(x=>`<span class="chip">${x}</span>`).join(''); }
+function personLabel(){return {citizen:'гражданин РБ',foreign_perm:'иностранец с ВНЖ',refugee_perm:'беженец/убежище с ПМЖ'}[state.person]||''}
+function premiseLabel(){return {dwelling:'жилое помещение',temporary:'садовый домик/дача',special_housing:'спец/общежитие',institution:'учреждение'}[state.premise]||''}
+function basisLabel(){return {self_owner:'собственность',owner_provides:'собственник предоставляет',share_owner:'долевая собственность',tenant:'наниматель',hire_contract:'договор найма',leasing:'лизинг',temp_lease:'аренда дачи/садового домика',court:'решение суда',no_basis:'нет основания'}[state.basisKind]||''}
+
+function makeDecision(){
+  const docs=['документ, удостоверяющий личность'];
+  const consents=[]; const checks=[]; const basis=[]; const statement=[]; const risks=[]; let status='ok'; let title='Регистрация возможна при наличии указанных документов';
+  if(state.terminal==='not413'){return {status:'bad', title:'Не применять Указ № 413', basis:['Лицо временно пребывает или временно проживает в РБ.'], docs:['Проверить акты миграционного учета для временно пребывающих/временно проживающих иностранцев.'], consents:[], checks:['Направить по иной процедуре.'], statement:['Не оформлять по этому мастеру.'], risks:['Указ № 413 применяется к постоянно проживающим иностранцам/лицам без гражданства, а не к временно пребывающим/проживающим.'], refs:['scope']};}
+  if(state.person==='foreign_perm'||state.person==='refugee_perm') docs.push('вид на жительство / биометрический ВНЖ / удостоверение беженца — по ситуации');
+  if(state.regType==='residence'){docs.push('заявление о регистрации по месту жительства по форме МВД'); checks.push('срок обращения — не позднее одного месяца со дня прибытия на новое место жительства');}
+  if(state.regType==='stay'){docs.push('заявление о регистрации по месту пребывания по форме МВД'); checks.push('срок места пребывания: обычно до одного года; без снятия с места жительства; только один адрес места пребывания');}
+
+  // minors
+  if(state.age==='u14'){
+    if(state.minorDest==='parents'){basis.push('регистрация несовершеннолетнего до 14 лет по месту жительства/пребывания родителей или законных представителей'); consents.push('согласие собственника, наймодателя, нанимателя, лизингополучателя и взрослых членов семьи не требуется'); statement.push('Основание: регистрация несовершеннолетнего по месту жительства/пребывания законного представителя.');}
+    if(state.minorDest==='one_parent'){basis.push('регистрация несовершеннолетнего до 14 лет к одному родителю'); consents.push(state.regType==='residence'?'для места жительства: согласие второго родителя либо решение суда/Соглашение о детях':'для места пребывания: согласие второго законного представителя не требуется'); consents.push('согласие собственника/нанимателя/наймодателя/лизингополучателя не требуется'); statement.push('Основание: регистрация несовершеннолетнего по месту жительства/пребывания одного из родителей.');}
+    if(state.minorDest==='guardian'){basis.push('опека/попечительство/приемная семья/детский дом семейного типа'); docs.push('решение органа опеки и попечительства или иной документ законного представителя'); consents.push('согласие собственника/нанимателя/наймодателя/лизингополучателя не требуется при регистрации к законному представителю'); statement.push('Основание: решение органа опеки и попечительства / документ законного представителя.');}
+    if(state.minorDest==='fixed_home'){basis.push('закрепленное за несовершеннолетним жилое помещение'); docs.push('решение местного исполнительного и распорядительного органа о закреплении жилого помещения'); consents.push('согласие собственников, долевых собственников, нанимателей и иных зарегистрированных граждан не требуется'); statement.push('Основание: решение о закреплении жилого помещения.');}
+    if(state.minorDest==='grand_no_guardian'){status='bad'; title='Общего основания для регистрации до 14 лет к бабушке/дедушке нет'; risks.push('Нужен статус законного представителя, опека/попечительство, приемная семья, закрепленное жилье или иной специальный документ.'); statement.push('Без специального основания документы не принимать как полный комплект.');}
+    return finalize(status,title,basis,docs,consents,checks,statement,risks,['minor','consent','basis']);
+  }
+  if(state.age==='m14_18' && ['parents','one_parent','study','fixed_home'].includes(state.minorDest)){
+    if(state.minorDest==='parents'){basis.push('регистрация несовершеннолетнего 14–18 лет к законным представителям'); consents.push('согласие собственника/нанимателя/наймодателя/лизингополучателя не требуется');}
+    if(state.minorDest==='one_parent'){basis.push('регистрация несовершеннолетнего 14–18 лет к одному родителю'); consents.push(state.regType==='residence'?'для места жительства: согласие второго родителя либо суд/Соглашение о детях':'для места пребывания: согласие второго законного представителя не требуется');}
+    if(state.minorDest==='study'){basis.push('иногородний несовершеннолетний, зачисленный на дневную форму обучения'); checks.push('регистрация по месту пребывания на срок получения образования');}
+    if(state.minorDest==='fixed_home'){basis.push('закрепленное жилое помещение'); docs.push('решение о закреплении жилого помещения');}
+    statement.push('Основание: регистрация несовершеннолетнего по выбранному основанию согласно п. 7.');
+    return finalize(status,title,basis,docs,consents,checks,statement,risks,['minor','consent','stay']);
+  }
+  if(state.age==='m14_18' && state.minorDest==='not_parents'){
+    consents.push('письменное согласие законных представителей на регистрацию не по месту их жительства/пребывания');
+    docs.push('основание пользования помещением: собственность/найм/соглашение о признании членом семьи/иное');
+    checks.push('если один законный представитель отсутствует по основаниям, указанным в п. 13 или 22, проверить документы/сведения органа внутренних дел');
+  }
+
+  // basis cases
+  switch(state.basisKind){
+    case 'self_owner': basis.push('собственность на жилое помещение / помещение для временного проживания'); docs.push('документ о госрегистрации права, выписка из регистрационной книги или регистрационное удостоверение'); consents.push('согласия не требуются для регистрации собственника самого себя'); statement.push('Жилое помещение находится в собственности на основании: ________.'); break;
+    case 'owner_provides':
+      if(state.relation==='spouse_parent_child'){basis.push('брак или родство с собственником: супруг, родитель или ребенок'); docs.push('свидетельство о браке / свидетельство о рождении / справка ЗАГС'); consents.push('письменное согласие собственника'); consents.push('согласие совершеннолетних членов/бывших членов семьи собственника не требуется'); statement.push('Основание: документ, подтверждающий брак/родство с собственником, и письменное согласие собственника.');}
+      if(state.relation==='other_family_owner'){basis.push('письменное соглашение о признании членом семьи собственника'); docs.push('письменное соглашение о признании членом семьи; документ родства при наличии'); consents.push('письменное согласие собственника'); consents.push(state.extraConsent==='members_with_share'?'письменное согласие совершеннолетних членов/бывших членов семьи собственника, проживающих совместно и имеющих долю':'проверить наличие совместно проживающих совершеннолетних членов/бывших членов семьи собственника с долей'); statement.push('Основание: письменное соглашение о признании членом семьи собственника от ___; письменное согласие собственника; документ о родстве при наличии.');}
+      if(state.relation==='nonrelative_owner'){status='bad'; title='Простого согласия собственника недостаточно'; risks.push('Для неродственника нужно самостоятельное основание: договор найма, договор лизинга, решение суда или иное законное основание.'); statement.push('Оформить договор найма/лизинга либо представить решение суда/иное основание.');}
+      break;
+    case 'share_owner':
+      if(state.relation==='share_self'){basis.push('участник общей долевой собственности регистрируется сам'); consents.push('согласие иных участников общей долевой собственности не требуется'); statement.push('Основание: доля в праве собственности на жилое помещение.');}
+      if(state.relation==='share_spouse_parent_child'){basis.push('супруг, родитель или ребенок участника общей долевой собственности'); docs.push('документ о браке/родстве'); consents.push('письменное согласие участника долевой собственности, предоставляющего право владения и пользования'); consents.push('согласие иных участников долевой собственности не требуется'); statement.push('Основание: документ о браке/родстве и согласие участника долевой собственности.');}
+      if(state.relation==='share_other'){basis.push('иное лицо в жилье участника общей долевой собственности'); consents.push('письменное согласие участника долевой собственности и других участников общей долевой собственности'); statement.push('Основание: документ пользования жильем и согласия участников долевой собственности.');}
+      break;
+    case 'tenant':
+      if(state.tenantCase==='state_org_family'){basis.push('супруг, родители или дети нанимателя жилья госжилфонда либо частного фонда, где наймодатель — организация'); consents.push('письменное согласие нанимателя'); consents.push('согласие иных нанимателей и совершеннолетних членов их семей не требуется'); statement.push('Основание: документ о браке/родстве и письменное согласие нанимателя.');}
+      if(state.tenantCase==='private_citizen_family'){basis.push('супруг, родители или дети нанимателя частного жилищного фонда, где наймодатель — гражданин'); consents.push('письменное согласие нанимателя'); consents.push('письменное согласие наймодателя'); statement.push('Основание: документ о браке/родстве, согласие нанимателя и согласие наймодателя.');}
+      if(state.tenantCase==='tenant_other'){status='warn'; title='Нужно уточнить основание и согласия для иного лица'; risks.push('Проверьте договор найма, право на вселение и жилищное законодательство. Для неродственника нужен самостоятельный документ-основание.'); statement.push('Указать конкретное основание: договор найма/поднайма, признание членом семьи, решение суда или иное.');}
+      break;
+    case 'hire_contract':
+      basis.push('договор найма жилого помещения'); docs.push('действующий договор найма жилого помещения');
+      if(state.contractValid==='no'){status='bad'; title='Договор найма закончился — нет действующего основания'; docs.push('новый договор или дополнительное соглашение о продлении'); risks.push('По истекшему договору регистрацию/продление оформлять нельзя без нового основания.');}
+      if(state.contractValid==='unknown'){status='warn'; title='Нужно проверить срок договора найма'; checks.push('проверить срок, адрес, стороны договора и право пользования');}
+      statement.push('Жилое помещение предоставлено на основании договора найма жилого помещения от ___ № ___, срок действия до ___.'); break;
+    case 'leasing':
+      basis.push('договор лизинга жилого помещения'); docs.push('договор лизинга жилого помещения');
+      if(state.leasingCase==='spouse_parent_child'){docs.push('документ о браке/родстве'); consents.push('письменное согласие лизингополучателя'); consents.push('согласие лизингодателя не требуется');}
+      if(state.leasingCase==='other_family'){docs.push('письменное соглашение о признании членом семьи лизингополучателя'); consents.push('письменное согласие лизингополучателя и всех совершеннолетних членов семьи, проживающих совместно'); consents.push('согласие лизингодателя не требуется');}
+      statement.push('Основание: договор лизинга жилого помещения от ___ № ___; при регистрации члена семьи — соответствующие согласия.'); break;
+    case 'temp_lease':
+      basis.push('договор аренды помещения для временного проживания'); docs.push('договор аренды помещения для временного проживания');
+      if(state.regType!=='stay' || state.premise!=='temporary'){status='bad'; title='Договор аренды подходит только для места пребывания в даче/садовом домике'; risks.push('Для квартиры/дома как жилого помещения по Указу используется договор найма жилого помещения, а не договор аренды.');}
+      statement.push('Помещение для временного проживания предоставлено на основании договора аренды от ___ № ___ на срок до ___.'); break;
+    case 'court':
+      basis.push('решение суда о вселении или признании права пользования жилым помещением'); docs.push('копия/выписка из вступившего в силу решения суда'); if(state.regType!=='residence'){status='warn'; title='Решение суда в п. 4.2 указано как основание для регистрации по месту жительства';} statement.push('Основание: решение суда о вселении / признании права пользования от ___, вступившее в законную силу.'); break;
+    case 'no_basis': status='bad'; title='Нет документа-основания'; risks.push('Отказ возможен при непредставлении документов или документов, не соответствующих законодательству.'); statement.push('Нужно представить конкретный документ-основание из п. 4.2 или специальный документ главы 4.'); break;
+  }
+
+  if(state.location==='closed'){status='bad'; title='Регистрация ограничивается из-за территории/режима'; risks.push('Закрытые военные городки, закрытые территории, зоны экологического бедствия, особые режимы, ЧП, военное положение.');}
+  if(state.regType==='residence'){
+    if(state.area==='bad'){status='bad'; title='Норма площади не соблюдена и исключения нет'; risks.push('Отказ по ограничению п. 8, если случай не входит в п. 9.');}
+    if(state.area==='unknown'){status='warn'; title='Нужно проверить площадь или исключение п. 9'; risks.push('Без этой проверки нельзя безопасно принять окончательное решение.');}
+    if(state.location==='minsk') checks.push('Минск: для места жительства норма 20 кв. м, исключения п. 9 для Минска уже общего перечня.');
+    if(state.location==='not_minsk') checks.push('Не Минск: для места жительства общая норма 15 кв. м, общежитие — 6 кв. м жилой площади.');
+  }
+  return finalize(status,title,basis,docs,consents,checks,statement,risks,['basis','consent','limits','exceptions','refuse','residenceDocs','stay']);
+}
+function finalize(status,title,basis,docs,consents,checks,statement,risks,refKeys){return {status,title,basis,docs,consents,checks,statement,risks,refs:refKeys};}
+function list(items){return items.length?`<ol>${items.map(x=>`<li>${x}</li>`).join('')}</ol>`:'<p class="muted">Нет дополнительных требований в этой ветке.</p>'}
+function renderFinal(){ const d=makeDecision(); const label=d.status==='ok'?'Можно':'warn'===d.status?'Проверить / дооформить':'Нельзя / не по этой процедуре';
+  return `<div class="result ${d.status}"><span class="pill">${label}</span><h2>${d.title}</h2></div>
+  <details open><summary>Основание</summary>${list(d.basis)}</details>
+  <details open><summary>Документы</summary>${list(d.docs)}</details>
+  <details open><summary>Конкретные согласия</summary>${list(d.consents)}</details>
+  <details><summary>Что проверить</summary>${list(d.checks)}</details>
+  <details open><summary>Что писать в заявлении</summary><div class="copybox">${d.statement.join('\n\n')}</div><div class="actions"><button class="btn" onclick="copyText(${JSON.stringify(d.statement.join('\n\n')).replace(/"/g,'&quot;')})">Скопировать формулировку</button></div></details>
+  <details><summary>Риски / когда отказать</summary>${list(d.risks)}</details>
+  <h3>Ссылки для проверки</h3>${refHtml(d.refs)}
+  <div class="actions"><button class="btn primary" onclick="reset()">Начать заново</button><button class="btn" onclick="back()">Назад</button><button class="btn" onclick="window.print()">Печать / PDF</button></div>`;
+}
+function render(){ const el=document.getElementById('app'); const side=document.getElementById('side');
+  if(current==='final'){ el.innerHTML=`<div class="progress"><div class="bar" style="width:100%"></div></div><div class="path">${pathHtml()}</div>${renderFinal()}`; side.innerHTML=sideCommon(['refuse','forms']); renderDirectory(); return; }
+  const q=questions[current]; el.innerHTML=`<div class="muted">Шаг ${history.length+1}</div><div class="progress"><div class="bar" style="width:${pct()}%"></div></div><h2>${q.title}</h2><p class="muted">${q.help}</p><div class="path">${pathHtml()}</div><div class="options">${q.options.map((o,i)=>`<button class="opt" onclick="choose(questions['${current}'].options[${i}])"><strong>${o.label}</strong><span>${o.note}</span></button>`).join('')}</div><div class="actions"><button class="btn" onclick="back()" ${history.length?'':'disabled'}>Назад</button><button class="btn danger" onclick="reset()">Сбросить</button></div>`;
+  side.innerHTML=`<h2>Справка к шагу</h2><p>${q.help}</p><h3>Проверить в документе</h3>${refHtml(q.refs)}${sideCommon([])}`; renderDirectory(); }
+function sideCommon(extra){return `<details open><summary>Официальный текст</summary><p><a target="_blank" rel="noopener" href="${LAW_URL}">ЭТАЛОН: Указ № 413</a></p><p><a target="_blank" rel="noopener" href="${PRAVO_URL}">Pravo.by: карточка документа</a></p><p class="muted">В справках указаны пункты документа. Перед отказом сверяйте актуальную редакцию.</p>${refHtml(extra)}</details><details><summary>Как пользоваться</summary><ul><li>Отвечайте сверху вниз.</li><li>На итоговом экране откройте “Основание”, “Согласия”, “Что писать”.</li><li>Для спорного случая нажмите ссылку на пункт Указа и проверьте текст.</li></ul></details>`}
+function renderDirectory(){ const term=(document.getElementById('search')?.value||'').toLowerCase(); const dir=document.getElementById('directory'); if(!dir) return; const items=directory.filter(x=>(x.title+' '+x.body).toLowerCase().includes(term)); dir.innerHTML=items.map(x=>`<div class="smallcard"><h4>${x.title}</h4><p class="muted">${x.body}</p>${refHtml(x.refs)}</div>`).join('') || '<p class="muted">Ничего не найдено.</p>'; }
+function copyText(t){navigator.clipboard?.writeText(t).then(()=>alert('Скопировано'));}
+document.getElementById('search').addEventListener('input', renderDirectory);
+render();
+</script>
+</body>
+</html>
